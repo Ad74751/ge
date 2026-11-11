@@ -4,8 +4,10 @@ ge was built CPU-first: its CPU engine has its own int8 matrix kernels, a per-ma
 and an 8-bit KV cache by default. This page compares it with llama.cpp on the CPU alone, at three
 context lengths, so you can see how both behave as prompts and conversations get longer.
 
-**Test machine:** AMD Ryzen 5 5600H (6 cores / 12 threads, Zen 3, AVX2), dual-channel DDR4
-(about 31 GB/s measured), Windows 11, no GPU used.
+**Test machine:** an ASUS Vivobook laptop (model M6500QC) with an AMD Ryzen 5 5600H (6 cores / 12
+threads, Zen 3, 3.3–4.2 GHz, AVX2, 45 W default TDP) and 16 GB of dual-channel DDR4-3200 (about
+30 GB/s measured), Windows 11 (build 26300), plugged in, Balanced power plan. No GPU used. Full
+specs: [README](../README.md#test-machine).
 **Model:** Qwen3-4B-Instruct-2507, `Q4_K_M` (2.5 GB), the same file for both engines.
 **Versions:** ge v0.1.0-alpha.1, llama.cpp build 9102. Measured 12 Nov 2026, back to back.
 
@@ -45,7 +47,7 @@ int8 kernels win. Prompt speed is what you wait for before the first word of eve
 on this CPU, llama.cpp after about 40.
 
 **2. Generation speed is a tie, as it should be.** Generating one token at a time on a CPU is limited
-by how fast weights stream from RAM (about 31 GB/s here), not by the engine. Both engines reach that
+by how fast weights stream from RAM (about 30 GB/s here), not by the engine. Both engines reach that
 limit, so neither can pull ahead by much.
 
 **3. ge saves memory without losing speed.** ge keeps its KV cache (the memory that holds the

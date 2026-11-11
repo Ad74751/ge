@@ -2,7 +2,7 @@
 
 **ge** is a GGUF inference engine written in pure Rust: one ~4 MB executable, no runtime dependencies in the core (the HTTP server is an optional actix-web feature), CPU and Vulkan GPU, and hybrid CPU+GPU. This report compares it with llama.cpp on the same machine and the same model files, and lists the places where llama.cpp is still better.
 
-Test machine: AMD Ryzen 5 5600H (6 cores, DDR4, about 31 GB/s), NVIDIA RTX 3050 Laptop (4 GB, 162 GB/s VRAM read, 6.7 GB/s PCIe), Windows 11. llama.cpp build 9102. Both engines were run back to back; laptop thermals and background load move numbers by roughly 10–30% between runs, so differences under about 5% are ties.
+Test machine: AMD Ryzen 5 5600H (6 cores, DDR4, about 31 GB/s), NVIDIA RTX 3050 Laptop GPU (4 GB, 35 W default power limit, 40 W when checked, 162 GB/s VRAM read, 6.7 GB/s host-to-GPU), Windows 11. Full specs: [README](../README.md#test-machine). llama.cpp build 9102. Both engines were run back to back; laptop thermals and background load move numbers by roughly 10–30% between runs, so differences under about 5% are ties.
 
 ## Summary
 

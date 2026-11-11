@@ -57,8 +57,9 @@ code-signed yet, so SmartScreen may warn about an unknown publisher. ge picks CP
 
 ## Benchmarks
 
-Measured on one laptop: AMD Ryzen 5 5600H (6 cores, DDR4), NVIDIA RTX 3050 Laptop GPU (4 GB),
-Windows 11, against llama.cpp build 9102 with the same GGUF files. Higher is better unless noted.
+Measured on one laptop with a Ryzen 5 5600H and an RTX 3050 Laptop GPU running at a 35–40 W power
+limit (full specs under [Test machine](#test-machine)), against llama.cpp build 9102 with the same
+GGUF files. Higher is better unless noted.
 
 <p align="center"><img src="assets/chart-vs-llamacpp.svg" alt="ge vs llama.cpp: who is ahead, per workload" width="760"></p>
 
@@ -109,6 +110,24 @@ No GPU? ge was built CPU-first. On the same 6-core laptop CPU, with prompts and 
   prompt, such as editing code (off in all benchmark numbers here).
 
 Full numbers, memory per context length and the commands to reproduce: [docs/CPU_BENCHMARKS.md](docs/CPU_BENCHMARKS.md).
+
+### Test machine
+
+All results on this page come from one laptop, an ASUS Vivobook (model M6500QC):
+
+| Part | Details |
+|---|---|
+| CPU | AMD Ryzen 5 5600H: 6 cores / 12 threads (Zen 3), 3.3 GHz base, up to 4.2 GHz boost, 16 MB L3, AVX2 (no AVX-512). AMD's default TDP is 45 W; the laptop's actual CPU power limit wasn't measured. |
+| RAM | 16 GB DDR4-3200, dual channel (2 × 8 GB). About 30 GB/s measured by ge's tuner. |
+| GPU | NVIDIA GeForce RTX 3050 Laptop GPU, 4 GB GDDR6, up to 2,100 MHz. **Power limit 35 W by default** (40 W when checked, 50 W maximum). About 162 GB/s VRAM read and 6.7 GB/s host-to-GPU copy measured by `ge selftest`. |
+| Integrated GPU | AMD Radeon Vega 7 (not used: under 1 GB of VRAM) |
+| Storage | Micron 2450 512 GB NVMe SSD |
+| Software | Windows 11 Home (build 26300), NVIDIA driver 616.92, Vulkan 1.4. llama.cpp build 9102 (Vulkan backend). |
+| Power | On AC power and the Windows "Balanced" power plan when checked; normal background programs (browser, editor) running during the runs. |
+
+**About the GPU wattage:** laptop makers configure the RTX 3050 Laptop GPU anywhere from about 35 W to
+80 W, and this one sits at the bottom of that range. A higher-wattage RTX 3050, or any desktop GPU,
+will be faster for both engines; the comparison between ge and llama.cpp is what carries over.
 
 ### Benchmark your own machine
 
