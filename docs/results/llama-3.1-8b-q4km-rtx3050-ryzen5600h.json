@@ -1,0 +1,14 @@
+{
+  "model": "Meta-Llama-3.1-8B-Instruct-Q4_K_M.gguf (4.92 GB)",
+  "cpu": "AMD Ryzen 5 5600H with Radeon Graphics · avx2 · 6 cores · 15.4 GB usable RAM",
+  "gpus": "NVIDIA GeForce RTX 3050 Laptop GPU (4.2 GB VRAM) · AMD Radeon(TM) Graphics (0.3 GB VRAM)",
+  "os": "windows x86_64",
+  "workload": "512-token prompt, 128 generated tokens, 4096 context, 5 run(s) each, median shown",
+  "ge": "v0.1.0",
+  "prompt_tokens": 512, "gen_tokens": 128, "context": 4096, "runs": 5,
+  "results": [
+    {"mode": "CPU only", "device": "CPU", "placement": "CPU", "prefill_tok_s": 44.00, "decode_tok_s": 7.52, "prefill_runs": [44.00, 46.40, 42.70, 44.80, 41.30], "decode_runs": [7.53, 7.54, 7.52, 7.10, 6.54], "peak_ram_gb": 4.90, "vram_gb": null, "error": null},
+    {"mode": "GPU, all layers", "device": "RTX 3050 Laptop", "placement": "", "prefill_tok_s": null, "decode_tok_s": null, "prefill_runs": [], "decode_runs": [], "peak_ram_gb": null, "vram_gb": null, "error": "does not fit: needs 4.62 GB of VRAM, 3.53 GB free"},
+    {"mode": "Auto (planner)", "device": "RTX 3050 Laptop", "placement": "hybrid 22/32 on GPU", "prefill_tok_s": 424.90, "decode_tok_s": 13.82, "prefill_runs": [424.90, 374.00, 419.30, 432.00, 449.80], "decode_runs": [13.16, 10.62, 13.82, 14.37, 14.48], "peak_ram_gb": 1.89, "vram_gb": 3.74, "error": null}
+  ]
+}

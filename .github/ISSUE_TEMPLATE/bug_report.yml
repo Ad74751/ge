@@ -1,0 +1,37 @@
+name: Bug report
+description: Something crashed, gave wrong output, or didn't work as documented
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you ran, what you expected, and what you got instead.
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Command and output
+      description: The full command and its output. Add `--verbose` for more detail. Remove anything private (file paths can contain your user name).
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: devices
+    attributes:
+      label: ge devices and ge selftest
+      description: Output of `ge devices` and `ge selftest` (they show your CPU features and GPUs).
+      render: text
+  - type: input
+    id: version
+    attributes:
+      label: ge version (`ge --version`) and OS
+      placeholder: v0.1.0-alpha.1, Windows 11
+    validations:
+      required: true
+  - type: input
+    id: model
+    attributes:
+      label: Model file
+      placeholder: Qwen3-4B-Instruct-2507-Q4_K_M.gguf

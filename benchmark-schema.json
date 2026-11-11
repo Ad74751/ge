@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Ad74751/ge/blob/main/benchmark-schema.json",
+  "title": "ge bench-all result",
+  "description": "The JSON file written by `ge bench-all --out NAME` (NAME.json). Rates are tokens per second; memory is in GB (1e9 bytes).",
+  "type": "object",
+  "required": ["model", "cpu", "gpus", "os", "workload", "ge", "prompt_tokens", "gen_tokens", "context", "runs", "results"],
+  "properties": {
+    "model": { "type": "string", "description": "Model file name and size, e.g. \"Llama-3.1-8B-Instruct-Q4_K_M.gguf (4.92 GB)\"." },
+    "cpu": { "type": "string", "description": "CPU model, SIMD level used, physical core count and usable RAM." },
+    "gpus": { "type": "string", "description": "Vulkan GPUs found, with total VRAM, or \"none (no Vulkan)\"." },
+    "os": { "type": "string", "description": "Operating system and architecture, e.g. \"windows x86_64\"." },
+    "workload": { "type": "string", "description": "Human-readable summary of the settings below." },
+    "ge": { "type": "string", "description": "ge version, e.g. \"v0.1.0-alpha.1\"." },
+    "prompt_tokens": { "type": "integer", "minimum": 1, "description": "Prompt length for the prefill measurement (--pp)." },
+    "gen_tokens": { "type": "integer", "minimum": 1, "description": "Tokens generated for the decode measurement (--tg)." },
+    "context": { "type": "integer", "minimum": 1, "description": "Context length the session was sized for (--ctx)." },
+    "runs": { "type": "integer", "minimum": 1, "description": "Runs per configuration (--runs)." },
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["mode", "device", "placement", "prefill_tok_s", "decode_tok_s", "prefill_runs", "decode_runs", "peak_ram_gb", "vram_gb", "error"],
+        "properties": {
+          "mode": { "type": "string", "enum": ["CPU only", "GPU, all layers", "Auto (planner)"] },
+          "device": { "type": "string", "description": "\"CPU\" or a shortened GPU name." },
+          "placement": { "type": "string", "description": "Where the layers ran, e.g. \"CPU\", \"GPU 36/36 layers\", \"hybrid 22/32 on GPU\". Empty when the configuration failed." },
+          "prefill_tok_s": { "type": ["number", "null"], "description": "Median prefill rate." },
+          "decode_tok_s": { "type": ["number", "null"], "description": "Median decode rate (plain greedy generation, no speculative decoding)." },
+          "prefill_runs": { "type": "array", "items": { "type": "number" }, "description": "Prefill rate of every run." },
+          "decode_runs": { "type": "array", "items": { "type": "number" }, "description": "Decode rate of every run." },
+          "peak_ram_gb": { "type": ["number", "null"], "description": "Peak process working set, including mapped model pages." },
+          "vram_gb": { "type": ["number", "null"], "description": "GPU weights plus session buffers; null for CPU-only." },
+          "error": { "type": ["string", "null"], "description": "Why the configuration could not run, e.g. \"does not fit: needs 4.62 GB of VRAM, 3.53 GB free\"." }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

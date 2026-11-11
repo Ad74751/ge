@@ -1,0 +1,69 @@
+name: Benchmark result
+description: Share ge's speed on your hardware (ge bench-all output)
+title: "[benchmark] CPU / GPU / model"
+labels: ["benchmark"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for benchmarking ge! Please follow [BENCHMARKING.md](https://github.com/Ad74751/ge/blob/main/BENCHMARKING.md):
+        run `ge bench-all -m MODEL.gguf --runs 5 --out my-results`, plugged in, with other heavy programs closed.
+        Only share what you're comfortable making public.
+  - type: input
+    id: version
+    attributes:
+      label: ge version
+      description: Output of `ge --version`.
+      placeholder: v0.1.0-alpha.1
+    validations:
+      required: true
+  - type: input
+    id: model
+    attributes:
+      label: Model file
+      description: Exact file name (quantization matters). SHA-256 if you can.
+      placeholder: Llama-3.1-8B-Instruct-Q4_K_M.gguf
+    validations:
+      required: true
+  - type: input
+    id: hardware
+    attributes:
+      label: CPU, GPU and RAM
+      placeholder: Ryzen 7 7840HS, Radeon 780M, 32 GB DDR5
+    validations:
+      required: true
+  - type: input
+    id: drivers
+    attributes:
+      label: OS and GPU driver version
+      placeholder: Windows 11 24H2, NVIDIA 566.36
+  - type: dropdown
+    id: power
+    attributes:
+      label: Power
+      options:
+        - Desktop
+        - Laptop, plugged in, performance mode
+        - Laptop, plugged in, balanced mode
+        - Laptop, on battery
+    validations:
+      required: true
+  - type: textarea
+    id: report
+    attributes:
+      label: bench-all report
+      description: Paste the contents of my-results.md here. Drag my-results.json into this box to attach it.
+      render: markdown
+    validations:
+      required: true
+  - type: textarea
+    id: llamacpp
+    attributes:
+      label: llama.cpp comparison (optional)
+      description: llama-bench output for the same model file, with the commands you ran.
+      render: text
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else
+      description: Errors, odd results, thermal throttling, other programs running.

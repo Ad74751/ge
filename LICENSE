@@ -1,0 +1,30 @@
+ge binary license
+
+Copyright (c) 2026 Ad74751. All rights reserved.
+
+1. Use. You may download, install and use the ge binaries published in the releases of
+   https://github.com/Ad74751/ge free of charge, for personal, educational and commercial
+   purposes, on any number of machines.
+
+2. Redistribution. You may share unmodified copies of the official release archives, as long
+   as this license and THIRD_PARTY_NOTICES.txt stay included. You may not sell the binaries or
+   distribute modified versions of them.
+
+3. Restrictions. Except to the extent applicable law expressly permits it, you may not reverse
+   engineer, decompile or disassemble the binaries.
+
+4. Your data. ge runs locally. Models you load, prompts you send and the text it generates are
+   yours; ge does not send them anywhere (see SECURITY.md).
+
+5. Documentation. The documentation, charts and benchmark data in this repository may be shared
+   and quoted with attribution to the ge project.
+
+6. Third-party components. ge includes open-source components that remain under their own
+   licenses, listed in THIRD_PARTY_NOTICES.txt. Nothing in this license limits your rights under
+   those licenses.
+
+7. No warranty. THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A
+   PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM,
+   DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
