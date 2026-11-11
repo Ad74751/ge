@@ -28,6 +28,8 @@ kernels, its own Vulkan GPU kernels, and a built-in OpenAI- and Anthropic-compat
   GPU vendor through the driver you already have.
 - **Ready to serve.** `ge serve` speaks the OpenAI and Anthropic APIs, batches many users into the
   same GPU steps, and can serve two models at once.
+- **Fast on plain CPUs.** Prompts are processed 1.13–1.42× faster than llama.cpp on the CPU, with
+  the same generation speed using half the threads and half the KV-cache memory.
 - **Honest numbers.** Every claim below comes from a run you can reproduce with one command, and
   the places where llama.cpp is faster are listed too.
 
@@ -62,8 +64,8 @@ Windows 11, against llama.cpp build 9102 with the same GGUF files. Higher is bet
 
 | Workload | Model | llama.cpp | ge | Ahead |
 |---|---|---:|---:|---|
-| CPU, prompt processing (512 tokens) | Qwen3-4B Q4_K_M | 56.5 tok/s | **89.3 tok/s** | ge, 1.58× |
-| CPU, generation | Qwen3-4B Q4_K_M | 12.2 tok/s | 11.6 tok/s | tie (llama.cpp +5%) |
+| CPU, prompt processing (512 tokens) | Qwen3-4B Q4_K_M | 59.4 tok/s | **84.4 tok/s** | ge, 1.42× |
+| CPU, generation | Qwen3-4B Q4_K_M | 11.6 tok/s | 11.8 tok/s | tie (ge +2%) |
 | GPU, prompt processing (512 tokens) | Qwen3-4B Q4_K_M | **1,282 tok/s** | 968 tok/s | llama.cpp, 1.32× |
 | GPU, generation | Qwen3-4B Q4_K_M | 43.0 tok/s | 41.8 tok/s | tie (llama.cpp +3%) |
 | CPU+GPU hybrid, prompt processing | Llama-3.1-8B Q4_K_M | **535 tok/s** | 425 tok/s | llama.cpp, 1.26× |
@@ -82,12 +84,31 @@ It also supports far more model architectures, quantization types and backends (
 and has been tested by many more people.
 
 **How these were measured.** llama.cpp numbers come from `llama-bench` (2 repeats) or
-`llama-server`. ge's 8B numbers are the median of 5 runs; the Qwen3-4B CPU/GPU rows are single
-runs, so treat gaps under ~5% as ties. In the hybrid rows, ge's planner put 22 of 32 layers on the
+`llama-server`. ge's 8B numbers are the median of 5 runs; the Qwen3-4B CPU rows are means of 2 runs and the GPU rows
+single runs, so treat gaps under ~5% as ties. In the hybrid rows, ge's planner put 22 of 32 layers on the
 GPU; llama.cpp ran at `-ngl 21`, its fastest setting that fits (at 22 it runs out of VRAM and drops
 to 4 tok/s). The 16K row compares the same 33-layer GPU split, with llama.cpp's KV cache in RAM
 because it fails to allocate it in VRAM. Full details, caveats and older runs:
 [docs/COMPARISON.md](docs/COMPARISON.md).
+
+### CPU only
+
+No GPU? ge was built CPU-first. On the same 6-core laptop CPU, with prompts and conversations from
+512 to 8,192 tokens:
+
+<p align="center"><img src="assets/chart-cpu-prefill.svg" alt="CPU prompt processing by prompt length" width="760"></p>
+<p align="center"><img src="assets/chart-cpu-decode.svg" alt="CPU generation speed by context depth" width="760"></p>
+
+- **Faster prompts at every length:** 1.42× llama.cpp at 512 tokens, 1.27× at 2,048 and 1.13× at
+  8,192. That's the wait before every answer starts: a 2,048-token prompt takes 32 s instead of 40 s.
+- **Same generation speed with half the threads:** generation on a CPU is limited by RAM speed, and
+  both engines reach it. ge's auto-tuner gets there with 3 threads instead of 6, leaving cores free.
+- **Half the KV memory at no speed cost:** ge keeps the conversation's KV cache in 8-bit by default.
+  llama.cpp can do the same, but on this CPU it then generates 1.77× slower than ge at 8,192 tokens of context.
+- **Faster edits:** prompt-lookup decoding adds 37–46% generation speed when the answer repeats the
+  prompt, such as editing code (off in all benchmark numbers here).
+
+Full numbers, memory per context length and the commands to reproduce: [docs/CPU_BENCHMARKS.md](docs/CPU_BENCHMARKS.md).
 
 ### Benchmark your own machine
 
@@ -162,6 +183,25 @@ print(client.chat.completions.create(model="qwen", messages=[{"role": "user", "c
 Common options: `-c` context length, `-n` max new tokens, `-ngl N|all|auto` GPU layers, `--cpu`,
 `--gpu ID`, `-t` threads, `--temp --top-k --top-p --min-p --seed`. Run `ge` with no arguments for all of them.
 
+## Context window
+
+ge supports each model's full context length (for example 262,144 tokens for Qwen3-4B-Instruct-2507,
+131,072 for Llama-3.1-8B). Set it with `-c`:
+
+```bash
+ge chat  -m Qwen3-4B-Instruct-2507-Q4_K_M.gguf -c 32768          # a 32K-token conversation
+ge serve -m Qwen3-4B-Instruct-2507-Q4_K_M.gguf -c 16384 -np 4    # 16K tokens for each of 4 users
+```
+
+- **The 4,096-token default is not a limit.** `ge chat`, `ge run` and `ge serve` start at 4,096 tokens
+  (per user for `serve`) only to keep memory use low. Raise it with `-c`.
+- **Memory is the real limit.** Every token of context needs KV-cache memory. ge stores it in 8-bit,
+  about half of llama.cpp's default: for Qwen3-4B, 32K tokens take 2.6 GB with ge vs 4.8 GB in f16.
+  On a GPU, a context that doesn't fit in VRAM is split with the CPU automatically.
+- **Longer context is slower in every engine.** Each new token reads the whole conversation, so at
+  8,192 tokens generation is about 45% slower than at 512, in ge and llama.cpp alike. The benchmarks
+  above include 8K-context results for that reason, not just short prompts.
+
 ## What runs
 
 - **Model families:** Llama 2/3.x, Mistral, Mixtral (MoE), Qwen2/2.5/3 (dense and MoE), Gemma 1/2/3 (Gemma 3 lightly
@@ -186,6 +226,7 @@ repository. Feedback, bug reports and benchmark results are very welcome in the 
 ## Documentation
 
 - [docs/COMPARISON.md](docs/COMPARISON.md): full comparison with llama.cpp, including where ge loses
+- [docs/CPU_BENCHMARKS.md](docs/CPU_BENCHMARKS.md): CPU-only results at 512 to 8,192 tokens of context
 - [BENCHMARKING.md](BENCHMARKING.md): how to benchmark and submit results
 - [benchmark-schema.json](benchmark-schema.json): the JSON format written by `ge bench-all --out`
 - [CHANGELOG.md](CHANGELOG.md): what changed in each release
